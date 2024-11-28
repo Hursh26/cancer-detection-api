@@ -161,49 +161,49 @@ stick to this response format
     return JSONResponse({"riskLevel": risk_level, "instructions": instructions})
 
 
-# @app.post("/api/imaging")
-# async def image_testing(file: UploadFile = File(...)):
-#     # Save the uploaded ZIP file
-#     filepath = "uploads/" + file.filename
-#     with open(filepath, "wb") as f:
-#         f.write(file.file.read())
-#
-#     # Extract images from the ZIP file
-#     with zipfile.ZipFile(filepath, 'r') as zip_ref:
-#         zip_ref.extractall("uploads/")
-#
-#     new_model = load_model('models/imageclassifier.keras')
-#     new_model.predict(np.expand_dims(resize / 255, 0))
-#
-#     predicted_class_index = np.argmax(yhat)
-#
-#     # Your list of class names (make sure this is updated as mentioned before)
-#     class_names = ["normal",
-#                    "squamous.cell.carcinoma_left.hilum_T1_N2_M0_IIIa",
-#                    "adenocarcinoma_left.lower.lobe_T2_N0_M0_Ib",
-#                    "large.cell.carcinoma_left.hilum_T2_N2_M0_IIIa"]
-#
-#     # Get the predicted class name
-#     predicted_class = class_names[predicted_class_index]
-#
-#     print(f"Predicted class is: {predicted_class}")
-#
-#     results = {
-#         "cancer_detected": True,  # Replace with actual detection result
-#         "location": "Upper lobe of left lung",  # Replace with actual location
-#         "stage": "Stage II"  # Replace with actual stage
-#     }
-#
-#     # Remove the uploaded files
-#     os.remove(filepath)
-#     for filename in os.listdir("uploads/"):
-#         file_path = os.path.join("uploads/", filename)
-#         try:
-#             if os.path.isfile(file_path) or os.path.islink(file_path):
-#                 os.unlink(file_path)
-#             elif os.path.isdir(file_path):
-#                 shutil.rmtree(file_path)
-#         except Exception as e:
-#             print(f'Failed to delete {file_path}. Reason: {e}')
-#
-#     return JSONResponse({"results": results})
+@app.post("/api/imaging")
+async def image_testing(file: UploadFile = File(...)):
+    # Save the uploaded ZIP file
+    filepath = "uploads/" + file.filename
+    with open(filepath, "wb") as f:
+        f.write(file.file.read())
+
+    # Extract images from the ZIP file
+    with zipfile.ZipFile(filepath, 'r') as zip_ref:
+        zip_ref.extractall("uploads/")
+
+    new_model = load_model('imageclassifier.keras')
+    new_model.predict(np.expand_dims(resize / 255, 0))
+
+    predicted_class_index = np.argmax(yhat)
+
+    # Your list of class names (make sure this is updated as mentioned before)
+    class_names = ["normal",
+                   "squamous.cell.carcinoma_left.hilum_T1_N2_M0_IIIa",
+                   "adenocarcinoma_left.lower.lobe_T2_N0_M0_Ib",
+                   "large.cell.carcinoma_left.hilum_T2_N2_M0_IIIa"]
+
+    # Get the predicted class name
+    predicted_class = class_names[predicted_class_index]
+
+    print(f"Predicted class is: {predicted_class}")
+
+    results = {
+        "cancer_detected": True,  # Replace with actual detection result
+        "location": "Upper lobe of left lung",  # Replace with actual location
+        "stage": "Stage II"  # Replace with actual stage
+    }
+
+    # Remove the uploaded files
+    os.remove(filepath)
+    for filename in os.listdir("uploads/"):
+        file_path = os.path.join("uploads/", filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f'Failed to delete {file_path}. Reason: {e}')
+
+    return JSONResponse({"results": results})
